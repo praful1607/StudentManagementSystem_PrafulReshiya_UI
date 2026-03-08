@@ -75,7 +75,7 @@ const TableComponent = ({
                             className="btn-page"
                             title="Previous Page"
                         >
-                            &lt;
+                            &#10094;
                         </button>
                         <span className="page-current">Page {page} of {totalPages || 1}</span>
                         <button
@@ -84,7 +84,7 @@ const TableComponent = ({
                             className="btn-page"
                             title="Next Page"
                         >
-                            &gt;
+                            &#10095;
                         </button>
                     </div>
                 </div>

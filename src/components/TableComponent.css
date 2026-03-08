@@ -65,6 +65,9 @@
     align-items: center;
     justify-content: center;
     min-width: 40px;
+    color: #333;
+    font-weight: 600;
+    font-size: 1.1rem;
 }
 
 .btn-page:hover:not(:disabled) {

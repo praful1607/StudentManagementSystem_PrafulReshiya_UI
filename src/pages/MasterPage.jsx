@@ -8,7 +8,7 @@ const MasterPage = () => {
     return (
         <div className="master-layout">
             <header className="top-nav">
-                <div className="nav-brand">SCM System</div>
+                <div className="nav-brand">Student Management System</div>
                 <nav className="nav-links">
                     <NavLink to="/students" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
                         Students
@@ -21,10 +21,9 @@ const MasterPage = () => {
                     <button onClick={logout} className="btn-logout">Logout</button>
                 </div>
             </header>
-            
+
             <main className="main-content">
                 <div className="content-container">
-                    {/* Render the nested route component here */}
                     <Outlet />
                 </div>
             </main>

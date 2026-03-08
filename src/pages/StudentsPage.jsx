@@ -13,7 +13,7 @@ const StudentsPage = () => {
     const [sortColumn, setSortColumn] = useState('Id');
     const [sortDirection, setSortDirection] = useState('asc');
     const [page, setPage] = useState(1);
-    const pageSize = 2;
+    const pageSize = 5;
     const totalPages = Math.ceil(totalCount / pageSize);
 
     const [showForm, setShowForm] = useState(false);
