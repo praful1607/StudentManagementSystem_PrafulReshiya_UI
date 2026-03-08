@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import StudentForm from '../components/StudentForm';
+import TableComponent from '../components/TableComponent';
 import './StudentsPage.css';
 
 const StudentsPage = () => {
@@ -15,7 +16,6 @@ const StudentsPage = () => {
     const pageSize = 2;
     const totalPages = Math.ceil(totalCount / pageSize);
 
-    // Modal state
     const [showForm, setShowForm] = useState(false);
     const [editingStudent, setEditingStudent] = useState(null);
 
@@ -58,17 +58,13 @@ const StudentsPage = () => {
     }, [search]);
 
     const handleSort = (column) => {
-        if (sortColumn === column) {
+        const pascaleCaseColumn = column.charAt(0).toUpperCase() + column.slice(1);
+        if (sortColumn === pascaleCaseColumn) {
             setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
         } else {
-            setSortColumn(column);
+            setSortColumn(pascaleCaseColumn);
             setSortDirection('asc');
         }
-    };
-
-    const SortIcon = ({ column }) => {
-        if (sortColumn !== column) return <span className="sort-icon invisible">↕</span>;
-        return <span className="sort-icon">{sortDirection === 'asc' ? '↑' : '↓'}</span>;
     };
 
     const handleDelete = async (id) => {
@@ -116,78 +112,47 @@ const StudentsPage = () => {
                 />
             </div>
 
-            <div className="grid-container">
-                <table className="data-grid">
-                    <thead>
-                        <tr>
-                            <th onClick={() => handleSort('FirstName')} className="sortable-col">
-                                First Name <SortIcon column="FirstName" />
-                            </th>
-                            <th onClick={() => handleSort('LastName')} className="sortable-col">
-                                Last Name <SortIcon column="LastName" />
-                            </th>
-                            <th onClick={() => handleSort('EmailId')} className="sortable-col">
-                                Email <SortIcon column="EmailId" />
-                            </th>
-                            <th onClick={() => handleSort('PhoneNumber')} className="sortable-col">
-                                Phone <SortIcon column="PhoneNumber" />
-                            </th>
-                            <th>Enrolled Classes</th>
-                            <th className="action-col">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {loading ? (
-                            <tr><td colSpan="6" className="text-center">Loading...</td></tr>
-                        ) : students.length === 0 ? (
-                            <tr><td colSpan="6" className="text-center">No students found</td></tr>
-                        ) : (
-                            students.map(student => (
-                                <tr key={student.id}>
-                                    <td>{student.firstName}</td>
-                                    <td>{student.lastName}</td>
-                                    <td>{student.emailId}</td>
-                                    <td>{student.phoneNumber}</td>
-                                    <td>
-                                        <div className="class-pills">
-                                            {student.classes.length > 0
-                                                ? student.classes.map(c => <span key={c.id} className="pill">{c.name}</span>)
-                                                : <span className="text-muted">None</span>}
-                                        </div>
-                                    </td>
-                                    <td className="actions-cell">
-                                        <button className="btn-icon check" onClick={() => openEditModal(student)}>✏️</button>
-                                        <button className="btn-icon trash" onClick={() => handleDelete(student.id)}>🗑️</button>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
-            </div>
-
-            <div className="pagination">
-                <div className="page-info">
-                    Showing {students.length > 0 ? ((page - 1) * pageSize) + 1 : 0} to {Math.min(page * pageSize, totalCount)} of {totalCount} records
-                </div>
-                <div className="page-controls">
-                    <button
-                        disabled={page === 1}
-                        onClick={() => setPage(prev => prev - 1)}
-                        className="btn-page"
-                    >
-                        Previous
-                    </button>
-                    <span className="page-current">Page {page} of {totalPages || 1}</span>
-                    <button
-                        disabled={page === totalPages || totalPages === 0}
-                        onClick={() => setPage(prev => prev + 1)}
-                        className="btn-page"
-                    >
-                        Next
-                    </button>
-                </div>
-            </div>
+            <TableComponent 
+                columns={[
+                    { key: 'firstName', label: 'First Name', sortable: true },
+                    { key: 'lastName', label: 'Last Name', sortable: true },
+                    { key: 'emailId', label: 'Email', sortable: true },
+                    { key: 'phoneNumber', label: 'Phone', sortable: true },
+                    { 
+                        key: 'classes', 
+                        label: 'Enrolled Classes', 
+                        render: (row) => (
+                            <div className="class-pills">
+                                {row.classes.length > 0
+                                    ? row.classes.map(c => <span key={c.id} className="pill">{c.name}</span>)
+                                    : <span className="text-muted">None</span>}
+                            </div>
+                        )
+                    },
+                    {
+                        key: 'actions',
+                        label: 'Actions',
+                        className: 'actions-cell',
+                        render: (row) => (
+                            <>
+                                <button className="btn-icon check" title="Edit Student" onClick={() => openEditModal(row)}>📝</button>
+                                <button className="btn-icon trash" title="Delete Student" onClick={() => handleDelete(row.id)}>❌</button>
+                            </>
+                        )
+                    }
+                ]}
+                data={students}
+                loading={loading}
+                emptyMessage="No students found"
+                sortColumn={sortColumn}
+                sortDirection={sortDirection}
+                onSort={handleSort}
+                page={page}
+                pageSize={pageSize}
+                totalCount={totalCount}
+                totalPages={totalPages}
+                onPageChange={setPage}
+            />
 
             {showForm && (
                 <div className="modal-overlay">
